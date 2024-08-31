@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Donation</title>
+    <link rel="stylesheet" href="update_donation.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Update Donation</h1>
+        <form id="updateDonationForm">
+            <input type="text" id="donation_id" placeholder="Donation ID" required>
+            <input type="text" id="item_name" placeholder="Item Name">
+            <input type="text" id="item_type" placeholder="Item Type">
+            <input type="number" id="value" placeholder="Value">
+            <input type="number" id="quantity" placeholder="Quantity">
+            <input type="text" id="community_id" placeholder="Community ID">
+            <input type="date" id="donation_date">
+            <input type="number" id="remaining_quantity" placeholder="Remaining Quantity">
+            <input type="text" id="status" placeholder="Status">
+            <button type="submit">Update Donation</button>
+        </form>
+        <div id="message"></div>
+    </div>
+    <script src="update_donation.js"></script>
+</body>
+</html>

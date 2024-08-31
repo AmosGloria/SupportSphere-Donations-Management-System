@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Donation</title>
+    <link rel="stylesheet" href="create_donation.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Create Donation</h1>
+        <form id="createDonationForm">
+            <input type="text" id="item_name" placeholder="Item Name" required>
+            <input type="text" id="item_type" placeholder="Item Type" required>
+            <input type="number" id="value" placeholder="Value" required>
+            <input type="number" id="quantity" placeholder="Quantity" required>
+            <input type="text" id="community_id" placeholder="Community ID" required>
+            <input type="date" id="donation_date" required>
+            <input type="number" id="remaining_quantity" placeholder="Remaining Quantity" required>
+            <input type="text" id="status" placeholder="Status" required>
+            <button type="submit">Create Donation</button>
+        </form>
+        <div id="message"></div>
+    </div>
+    <script src="create_donation.js"></script>
+</body>
+</html>

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration</title>
+    <link rel="stylesheet" href="registration.css">
+</head>
+<body>
+    <header>
+        <h1>Register for SupportSphere</h1>
+    </header>
+    <div class="container">
+        <form id="registrationForm">
+            <input type="text" id="name" placeholder="Name" required>
+            <input type="email" id="email" placeholder="Email" required>
+            <input type="password" id="password" placeholder="Password" required>
+            <select id="role" required>
+                <option value="" disabled selected>Select your role</option>
+                <option value="admin">Admin</option>
+                <option value="donor">Donor</option>
+                <option value="community_manager">Community Manager</option>
+            </select>
+            <button type="submit">Register</button>
+        </form>
+        <div id="loginPrompt" style="display: none;">
+            <p>Registration successful! Please <a href="login.html">login</a>.</p>
+        </div>
+    </div>
+    <script src="registration.js"></script>
+</body>
+</html>
