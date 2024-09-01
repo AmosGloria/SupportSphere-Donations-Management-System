@@ -109,7 +109,7 @@ app.get('/user/role', authenticateJWT, async (req, res) => {
     }
 });
 
-// Endpoint to delete a user
+// Endpoint to delete a user and reassign IDs
 app.delete('/user/:id', authenticateJWT, async (req, res) => {
     const { id } = req.params;
 
@@ -119,16 +119,26 @@ app.delete('/user/:id', authenticateJWT, async (req, res) => {
             return res.status(400).json({ message: 'Invalid user ID' });
         }
 
-        // Execute the delete query
-        const [result] = await pool.query('DELETE FROM Users WHERE user_id = ?', [id]);
+        // Delete the user
+        const [deleteResult] = await pool.query('DELETE FROM Users WHERE user_id = ?', [id]);
 
-        if (result.affectedRows > 0) {
-            res.sendStatus(204); // No Content, successful deletion
+        if (deleteResult.affectedRows > 0) {
+            // Reassign remaining user IDs
+            const [users] = await pool.query('SELECT user_id FROM Users ORDER BY user_id');
+
+            for (let i = 0; i < users.length; i++) {
+                const newId = i + 1;
+                if (users[i].user_id !== newId) {
+                    await pool.query('UPDATE Users SET user_id = ? WHERE user_id = ?', [newId, users[i].user_id]);
+                }
+            }
+
+            res.sendStatus(204); // No Content, successful deletion and reassignment
         } else {
             res.status(404).json({ message: 'User not found' });
         }
     } catch (error) {
-        console.error('Error deleting user:', error);
+        console.error('Error:', error);
 
         // Provide a more detailed error message if possible
         if (error.code === 'ER_NO_SUCH_TABLE') {
@@ -136,10 +146,36 @@ app.delete('/user/:id', authenticateJWT, async (req, res) => {
         } else if (error.code === 'ER_PARSE_ERROR') {
             res.status(500).json({ message: 'SQL syntax error' });
         } else {
-            res.status(500).json({ message: 'Failed to delete user' });
+            res.status(500).json({ message: 'Failed to delete user and reassign IDs' });
         }
     }
 });
+
+
+// Endpoint for Admin to Add a New User
+app.post('/admin/add-user', authenticateJWT, async (req, res) => {
+    const { name, email, password, role } = req.body;
+
+    // Check if the authenticated user is an admin
+    if (req.user.role !== 'admin') {
+        return res.status(403).json({ message: 'Access denied. Admins only.' });
+    }
+
+    // Hash the user's password
+    const hashedPassword = bcrypt.hashSync(password, 10);
+
+    try {
+        // Insert the new user into the database
+        await pool.query('INSERT INTO Users (name, email, password, role) VALUES (?, ?, ?, ?)', [name, email, hashedPassword, role]);
+
+        // Send success response
+        res.status(201).json({ message: 'User added successfully' });
+    } catch (error) {
+        console.error('Error adding user:', error);
+        res.status(500).json({ message: 'Failed to add user' });
+    }
+});
+
 
 // Handle creating a new donation
 app.post('/donations', authenticateJWT, async (req, res) => {
