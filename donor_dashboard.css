@@ -54,3 +54,21 @@ button {
 button:hover {
     background-color: #0056b3;
 }
+
+/* Additional styling for table elements */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+}
+
+th, td {
+    padding: 0.8rem;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    background-color: #007bff;
+    color: #fff;
+}

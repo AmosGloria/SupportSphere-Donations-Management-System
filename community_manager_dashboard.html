@@ -3,20 +3,78 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Community Manager Dashboard</title>
-    <link rel="stylesheet" href="community_manager_dashboard.css">
+    <title>Donor Dashboard</title>
+    <link rel="stylesheet" href="donor_dashboard.css">
 </head>
 <body>
     <div class="container">
-        <h1>Community Manager Dashboard</h1>
+        <h1>Donor Dashboard</h1>
         <nav>
             <ul>
-                <li><a href="manage_donations.html">Manage Donations</a></li>
-                <li><a href="notifications.html">Notifications</a></li>
+                <li><a href="#" id="createDonationLink">Create Donation</a></li>
+                <li><a href="#" id="viewDonationsLink">View My Donations</a></li>
+                <li><a href="#" id="notificationsLink">Notifications</a></li>
             </ul>
         </nav>
         <button id="logoutBtn">Logout</button>
+        
+        <!-- Sections for different views -->
+        <div id="createDonation" style="display: none;">
+            <h2>Create Donation</h2>
+            <form id="createDonationForm">
+                <label for="item_name">Item Name:</label>
+                <input type="text" id="item_name" name="item_name" required>
+                
+                <label for="item_type">Item Type:</label>
+                <input type="text" id="item_type" name="item_type" required>
+                
+                <label for="value">Value:</label>
+                <input type="number" id="value" name="value" required>
+                
+                <label for="quantity">Quantity:</label>
+                <input type="number" id="quantity" name="quantity" required>
+                
+                <label for="donation_date">Donation Date:</label>
+                <input type="date" id="donation_date" name="donation_date" required>
+                
+                <label for="remaining_quantity">Remaining Quantity:</label>
+                <input type="number" id="remaining_quantity" name="remaining_quantity" required>
+                
+                <label for="status">Status:</label>
+                <input type="text" id="status" name="status" required>
+                
+                <button type="submit">Submit Donation</button>
+            </form>
+        </div>
+
+        <div id="viewDonations" style="display: none;">
+            <h2>My Donations</h2>
+            <table id="donationsTable">
+                <thead>
+                    <tr>
+                        <th>Item Name</th>
+                        <th>Item Type</th>
+                        <th>Value</th>
+                        <th>Quantity</th>
+                        <th>Community ID</th>
+                        <th>Donation Date</th>
+                        <th>Remaining Quantity</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Data will be dynamically inserted here -->
+                </tbody>
+            </table>
+        </div>
+
+        <div id="notifications" style="display: none;">
+            <h2>Notifications</h2>
+            <ul id="notificationsList">
+                <!-- Notifications will be dynamically inserted here -->
+            </ul>
+        </div>
     </div>
-    <script src="community_manager_dashboard.js"></script>
+    <script src="donor_dashboard.js"></script>
 </body>
 </html>

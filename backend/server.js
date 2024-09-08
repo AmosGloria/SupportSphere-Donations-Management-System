@@ -2,7 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
-const pool = require('./database.js'); // Make sure to create this file with your MySQL pool configuration
+const pool = require('./database.js'); 
 const cors = require('cors');
 const nodemailer = require('nodemailer');
 require('dotenv').config();
@@ -151,7 +151,6 @@ app.delete('/user/:id', authenticateJWT, async (req, res) => {
     }
 });
 
-
 // Endpoint for Admin to Add a New User
 app.post('/admin/add-user', authenticateJWT, async (req, res) => {
     const { name, email, password, role } = req.body;
@@ -176,29 +175,38 @@ app.post('/admin/add-user', authenticateJWT, async (req, res) => {
     }
 });
 
-
 // Handle creating a new donation
 app.post('/donations', authenticateJWT, async (req, res) => {
     const { item_name, item_type, value, quantity, community_id, donation_date, remaining_quantity, status } = req.body;
     const { user_id, role } = req.user;
 
     try {
-        const [result] = await pool.query('INSERT INTO Donations (item_name, item_type, value, quantity, user_id, community_id, donation_date, remaining_quantity, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)', 
-            [item_name, item_type, value, quantity, user_id, community_id, donation_date, remaining_quantity, status]
+        // Check if community_id is provided, otherwise set it to NULL
+        const communityIdValue = community_id ? community_id : null;
+
+        // Insert the donation into the database
+        const [result] = await pool.query(
+            'INSERT INTO Donations (item_name, item_type, value, quantity, user_id, community_id, donation_date, remaining_quantity, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)', 
+            [item_name, item_type, value, quantity, user_id, communityIdValue, donation_date, remaining_quantity, status]
         );
         const donation_id = result.insertId;
 
+        // If donor, notify community manager
         if (role === 'donor') {
-            const [communityManager] = await pool.query('SELECT email FROM Users WHERE role = "community_manager" AND community_id = ?', [community_id]);
+            const [communityManager] = await pool.query(
+                'SELECT email FROM Users WHERE role = "community_manager"'
+            );
+
             if (communityManager.length > 0) {
                 const email = communityManager[0].email;
                 await sendNotification(email, 'New Donation Assigned', `A new donation with ID ${donation_id} has been assigned to your community.`);
             }
         }
-        
-        res.sendStatus(201);
+
+        res.status(201).send({ message: 'Donation created successfully!', donation_id });
     } catch (error) {
-        res.sendStatus(500);
+        console.error('Error creating donation:', error);
+        res.status(500).send({ message: 'Internal Server Error', error: error.message });
     }
 });
 
@@ -229,11 +237,10 @@ app.put('/donations/:id', authenticateJWT, async (req, res) => {
         if (role === 'community_manager' && status === 'Received') {
             const [donor] = await pool.query('SELECT email FROM Users WHERE user_id = (SELECT user_id FROM Donations WHERE donation_id = ?)', [id]);
             if (donor.length > 0) {
-                const email = donor[0].email;
-                await sendNotification(email, 'Donation Received', `Your donation with ID ${id} has been received by the community manager.`);
+                await sendNotification(donor[0].email, 'Donation Status Updated', `Your donation with ID ${id} has been received.`);
             }
         }
-        
+
         res.sendStatus(200);
     } catch (error) {
         res.sendStatus(500);
@@ -246,38 +253,13 @@ app.delete('/donations/:id', authenticateJWT, async (req, res) => {
 
     try {
         await pool.query('DELETE FROM Donations WHERE donation_id = ?', [id]);
-        res.sendStatus(200);
+        res.sendStatus(204);
     } catch (error) {
         res.sendStatus(500);
     }
 });
 
-// Handle saving settings (example implementation)
-app.post('/settings', authenticateJWT, async (req, res) => {
-    const { smtpServer, smtpPort, smtpUser, smtpPass } = req.body;
-
-    // Example: Save settings to a database or file
-    // For now, let's assume we save it to a mock database
-    try {
-        // Mock saving settings, in practice, save to a database or configuration file
-        res.sendStatus(200);
-    } catch (error) {
-        res.sendStatus(500);
-    }
-});
-
-// Get Notifications
-app.get('/notifications', authenticateJWT, async (req, res) => {
-    const { user_id } = req.user;
-
-    try {
-        const [rows] = await pool.query('SELECT * FROM Notifications WHERE user_id = ?', [user_id]);
-        res.json(rows);
-    } catch (error) {
-        res.sendStatus(500);
-    }
-});
-
+// Start the server
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
