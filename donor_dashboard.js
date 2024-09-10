@@ -20,6 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
         viewDonationsSection.style.display = 'none';
         notificationsSection.style.display = 'none';
         section.style.display = 'block';
+        scrollToSection(section); // Smooth scroll to the section
     };
 
     createDonationLink.addEventListener('click', () => showSection(createDonationSection));
@@ -42,7 +43,6 @@ document.addEventListener('DOMContentLoaded', () => {
             item_type: formData.get('item_type'),
             value: formData.get('value'),
             quantity: formData.get('quantity'),
-            // community_id: formData.get('community_id') || null, // Handle optional community_id
             donation_date: formData.get('donation_date'),
             remaining_quantity: formData.get('remaining_quantity'),
             status: formData.get('status')
@@ -131,4 +131,27 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     fetchNotifications();
+
+    // Smooth Scroll Functionality for Button Clicks
+    const scrollToSection = (element) => {
+        element.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+        });
+    };
+
+    // Keyboard Navigation for Arrow Keys
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'ArrowDown') {
+            window.scrollBy({
+                top: window.innerHeight, // Scroll down by the viewport height
+                behavior: 'smooth'
+            });
+        } else if (event.key === 'ArrowUp') {
+            window.scrollBy({
+                top: -window.innerHeight, // Scroll up by the viewport height
+                behavior: 'smooth'
+            });
+        }
+    });
 });

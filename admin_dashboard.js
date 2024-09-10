@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // Existing code
     const logoutBtn = document.getElementById('logoutBtn');
     const tabs = document.querySelectorAll('nav ul li a');
     const tabContents = document.querySelectorAll('.tab-content');
@@ -43,6 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Add User Button Handler
     addUserBtn.addEventListener('click', () => {
         addUserFormContainer.style.display = 'block';
+        scrollToSection(addUserFormContainer); // Smooth scroll to the add user form
     });
 
     // Cancel Add User Button Handler
@@ -62,7 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         try {
-            const response = await fetch('/register', {
+            const response = await fetch('http://localhost:8090/register', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -154,7 +156,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const community = filters.community.value;
 
         try {
-            const response = await fetch(`/donations?${new URLSearchParams({ status, community })}`, {
+            const response = await fetch(`http://localhost:8090/donations?${new URLSearchParams({ status, community })}`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -193,7 +195,7 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         try {
-            const response = await fetch('/settings', {
+            const response = await fetch('http://localhost:8090/settings', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -209,6 +211,46 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         } catch (error) {
             console.error('Error:', error);
+        }
+    });
+
+    // Smooth Scroll Functionality for Button Clicks
+    const scrollToSection = (element) => {
+        element.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+        });
+    };
+
+    // Smooth scroll for tab navigation
+    tabs.forEach(tab => {
+        tab.addEventListener('click', (event) => {
+            event.preventDefault();
+            const targetId = tab.getAttribute('href').substring(1);
+
+            tabContents.forEach(content => {
+                if (content.id === targetId) {
+                    content.style.display = 'block';
+                    scrollToSection(content); // Smooth scroll to the content
+                } else {
+                    content.style.display = 'none';
+                }
+            });
+        });
+    });
+
+    // Add keyboard navigation for arrow keys
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'ArrowDown') {
+            window.scrollBy({
+                top: window.innerHeight, // Scroll down by the viewport height
+                behavior: 'smooth'
+            });
+        } else if (event.key === 'ArrowUp') {
+            window.scrollBy({
+                top: -window.innerHeight, // Scroll up by the viewport height
+                behavior: 'smooth'
+            });
         }
     });
 });
