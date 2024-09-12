@@ -8,24 +8,36 @@
 </head>
 <body>
     <header>
-        <h1>Welcome to SupportSphere</h1>
+        <h3>SupportSphere Donation Management System</h3>
         <div class="auth-buttons">
             <button id="registerBtn">Register</button>
             <button id="loginBtn">Login</button>
         </div>
+        <!-- Moved Buttons to Navbar -->
+        <!-- <nav>
+            <button id="createDonationBtn">Create New Donation</button>
+            <button id="viewNotificationsBtn">View Notifications</button>
+        </nav> -->
     </header>
     <div class="container">
+        <!-- Welcome Message Section -->
+
+        <div id="loveShapeContainer">
+            <p>Welcome to SupportSphere, your trusted platform for managing donations and making a positive impact! Here, you can easily create new donations, track your contributions, and stay updated with the latest notifications.</p> 
+        </div>
+
+        <section id="welcomeMessage">
+           
+            <h3>Together, we're building a stronger community through kindness and generosity. Let's make a difference, one donation at a time!</h3>
+      
+        </section>
+       
+       
         <div id="roleSpecificContent">
             <!-- Role-specific content will be loaded here -->
         </div>
-        <div class="common-features">
-            <h2>Common Features</h2>
-            <div>
-                <button id="createDonationBtn">Create New Donation</button>
-                <button id="viewNotificationsBtn">View Notifications</button>
-            </div>
-        </div>
     </div>
+    
     <script src="general_dashboard.js"></script>
 </body>
 </html>

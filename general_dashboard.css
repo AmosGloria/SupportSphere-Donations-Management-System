@@ -73,3 +73,88 @@ h2 {
     margin-top: 2rem;
     text-align: center;
 }
+
+/* Creative Welcome Message Styling */
+#welcomeMessage {
+    background: radial-gradient(circle, #007bff, #0056b3); /* Radial gradient for depth */
+    color: white; /* White text for contrast */
+    border-radius: 15px; /* More rounded corners for a modern look */
+    padding: 2rem 3rem; /* Ample padding for a spacious feel */
+    margin-top: 2rem;
+    text-align: center;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3); /* More pronounced shadow for depth */
+    border: 2px solid #ffffff; /* White border for definition */
+    animation: pulse 2s infinite; /* Subtle pulse animation */
+}
+
+#welcomeMessage h2 {
+    margin: 0 0 1rem 0; /* Margin below the heading */
+    font-size: 2rem; /* Larger font size for emphasis */
+    font-weight: bold; /* Bold for importance */
+}
+
+#welcomeMessage p {
+    margin: 0;
+    font-size: 1.3rem; /* Slightly larger font size for readability */
+}
+
+/* Animation for Welcome Message */
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.02);
+        opacity: 0.9;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+
+/* Heart Shape Styling */
+#loveShapeContainer {
+    position: relative;
+    width: 400px; 
+    height: 170px; 
+    background: white; /* White background */
+    border-radius: 50% 50% 0 0; /* Top rounded corners */
+    border: 5px solid #007bff; /* Blue border */
+    overflow: hidden; /* Ensure content stays within bounds */
+    margin: 0 auto; /* Center the heart shape */
+    padding: 20px; /* Padding inside the heart shape */
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Shadow for depth */
+}
+
+#loveShapeContainer:before,
+#loveShapeContainer:after {
+    content: "";
+    
+    width: 120px; /* Increased width of the circles */
+    height: 120px; /* Increased height of the circles */
+    background: white; /* White background for the circles */
+    border: 5px solid #007bff; /* Blue border for the circles */
+    border-radius: 50%;
+    top: -60px; /* Adjust top position */
+}
+
+#loveShapeContainer:before {
+    left: 55px; /* Position for the left circle */
+}
+
+#loveShapeContainer:after {
+    left: 115px; /* Position for the right circle */
+}
+
+#loveShapeContainer h3 {
+    position: relative;
+    color: #007bff; /* Blue text color */
+    font-size: 1.2rem; /* Increased font size */
+    margin: 0;
+    z-index: 1; /* Ensure text is on top of the heart shape */
+}
+
