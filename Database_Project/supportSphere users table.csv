@@ -1,0 +1,4 @@
+user_id,name,email,password,role
+1,"Onume Johnson",onume@example.com,password123,admin
+2,"Kola Smith",kola@example.com,password123,donor
+3,"Catherine Fieme",catherine@example.com,password123,community_manager

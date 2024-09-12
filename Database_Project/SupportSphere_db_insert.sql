@@ -1,0 +1,122 @@
+-- Use the ngo_db database
+USE SupportSphere_db;
+
+-- Insert 3 users, one for each role
+INSERT INTO Users (name, email, password, role) VALUES
+('Onume Johnson', 'onume@example.com', 'password123', 'admin'),
+('Kola Smith', 'kola@example.com', 'password123', 'donor'),
+('Catherine Fieme', 'catherine@example.com', 'password123', 'community_manager');
+
+-- Insert data into Communities table, assigning each to the community manager
+INSERT INTO Communities (community_name, location, community_manager_id) VALUES
+('Okaka', 'Yenagoa', 3),
+('Eleme', 'Port Harcourt', 3),
+('Oseta', 'Ugheli', 3),
+('Kolokumo', 'Southern_Ijaw', 3),
+('Abuloma', 'Port Harcourt', 3),
+('Asaba', 'Delta', 3);
+
+-- Insert data into CommunityManagers table
+INSERT INTO CommunityManagers (user_id, community_id) VALUES
+(3, 1),
+(3, 2),
+(3, 3),
+(3, 4),
+(3, 5),
+(3, 6);
+
+-- Insert data into Donations table
+INSERT INTO Donations (item_name, item_type, value, quantity, user_id, community_id, donation_date, remaining_quantity, status) VALUES
+('Winter Jackets', 'in-kind', NULL, 50, 2, 1, '2024-08-01', 20, 'received'),
+('School Supplies', 'in-kind', NULL, 100, 2, 2, '2024-08-02', 50, 'pending'),
+('Books', 'in-kind', NULL, 200, 2, 3, '2024-08-03', 100, 'received'),
+('Medical Supplies', 'monetary', 500.00, NULL, 2, 1, '2024-08-04', NULL, 'received'),
+('Blankets', 'in-kind', NULL, 75, 2, 2, '2024-08-05', 25, 'not_received'),
+('Food Packages', 'in-kind', NULL, 120, 2, 3, '2024-08-06', 60, 'pending'),
+('Emergency Fund', 'monetary', 1000.00, NULL, 2, 1, '2024-08-07', NULL, 'received'),
+('Water Filters', 'in-kind', NULL, 30, 2, 2, '2024-08-08', 15, 'received'),
+('Solar Lanterns', 'in-kind', NULL, 40, 2, 3, '2024-08-09', 20, 'not_received'),
+('Sanitation Kits', 'monetary', 750.00, NULL, 2, 1, '2024-08-10', NULL, 'pending'),
+('Winter Jackets', 'in-kind', NULL, 50, 2, 1, '2024-08-01', 20, 'received'),
+('School Supplies', 'in-kind', NULL, 100, 2, 2, '2024-08-02', 50, 'pending'),
+('Books', 'in-kind', NULL, 200, 2, 3, '2024-08-03', 100, 'received'),
+('Medical Supplies', 'monetary', 500.00, NULL, 2, 1, '2024-08-04', NULL, 'received'),
+('Blankets', 'in-kind', NULL, 75, 2, 2, '2024-08-05', 25, 'not_received'),
+('Food Packages', 'in-kind', NULL, 120, 2, 3, '2024-08-06', 60, 'pending'),
+('Emergency Fund', 'monetary', 1000.00, NULL, 2, 1, '2024-08-07', NULL, 'received'),
+('Water Filters', 'in-kind', NULL, 30, 2, 2, '2024-08-08', 15, 'received'),
+('Solar Lanterns', 'monetary', 100.00, 40, 2, 3, '2024-08-09', 20, 'not_received'),
+('Sanitation Kits', 'monetary', 750.00, NULL, 2, 1, '2024-08-10', NULL, 'pending'),
+('Children’s shoes', 'monetary', 18.00, 70, 2, 1, '2024-09-02', 70, 'received'),
+('Energy-efficient stoves', 'monetary', 60.00, 15, 2, 2, '2024-09-03', 15, 'received'),
+('Sports equipment', 'in-kind', 40.00, 25, 2, 3, '2024-09-04', 25, 'received'),
+('Baby blankets', 'monetary', 10.00, 80, 2, 4, '2024-09-05', 80, 'received'),
+('School pencils', 'in-kind', 0.20, 1000, 2, 5, '2024-09-06', 1000, 'received'),
+('Water filters', 'monetary', 50.00, 25, 2, 6, '2024-09-07', 25, 'received'),
+('Medical masks', 'in-kind', 1.00, 500, 2, 1, '2024-09-08', 500, 'received'),
+('Emergency blankets', 'monetary', 12.00, 60, 2, 2, '2024-09-09', 60, 'received'),
+('Cooking gas', 'in-kind', 55.00, 30, 2, 3, '2024-09-10', 30, 'received'),
+('Women’s hygiene kits', 'monetary', 20.00, 40, 2, 4, '2024-09-11', 40, 'received'),
+('Men’s clothing', 'in-kind', 18.00, 60, 2, 5, '2024-09-12', 60, 'received'),
+('Children’s educational books', 'monetary', 10.00, 80, 2, 6, '2024-09-13', 80, 'received'),
+('Fruit and vegetable seeds', 'monetary', 25.00, 50, 2, 1, '2024-09-14', 50, 'received'),
+('Personal hygiene items', 'monetary', 5.00, 200, 2, 2, '2024-09-15', 200, 'received'),
+('School chalk', 'in-kind', 3.00, 150, 2, 3, '2024-09-16', 150, 'received'),
+('Vegetable oil', 'in-kind', 28.00, 50, 2, 4, '2024-09-17', 50, 'received'),
+('Footwear for adults', 'in-kind', 25.00, 30, 2, 5, '2024-09-18', 30, 'received'),
+('School art supplies', 'monetary', 12.00, 100, 2, 6, '2024-09-19', 100, 'received'),
+('Hygiene soap', 'in-kind', 2.00, 250, 2, 1, '2024-09-20', 250, 'received'),
+('Solar-powered radios', 'monetary', 45.00, 30, 2, 2, '2024-09-21', 30, 'received'),
+('Woven baskets', 'in-kind', 8.00, 100, 2, 3, '2024-09-22', 100, 'received'),
+('School desks', 'monetary', 60.00, 20, 2, 4, '2024-09-23', 20, 'received'),
+('Energy-saving bulbs', 'in-kind', 5.00, 100, 2, 5, '2024-09-24', 100, 'received'),
+('Multipurpose knives', 'monetary', 10.00, 50, 2, 6, '2024-09-25', 50, 'received'),
+('Infant clothing', 'monetary', 15.00, 80, 2, 1, '2024-09-26', 80, 'received'),
+('Solar water heaters', 'monetary', 200.00, 10, 2, 2, '2024-09-27', 10, 'received'),
+('Educational posters', 'monetary', 5.00, 150, 2, 3, '2024-09-28', 150, 'received'),
+('Reusable diapers', 'monetary', 25.00, 60, 2, 4, '2024-09-29', 60, 'received'),
+('Instant noodles', 'in-kind', 15.00, 100, 2, 5, '2024-09-30', 100, 'received'),
+('Hand tools', 'monetary', 40.00, 30, 2, 6, '2024-10-01', 30, 'received'),
+('Personal protective equipment', 'monetary', 60.00, 20, 2, 1, '2024-10-02', 20, 'received'),
+('Warm socks', 'monetary', 8.00, 100, 2, 2, '2024-10-03', 100, 'received'),
+('Medical thermometers', 'monetary', 25.00, 25, 2, 3, '2024-10-04', 25, 'received'),
+('School desks', 'in-kind', 55.00, 20, 2, 4, '2024-10-05', 20, 'received'),
+('Multipurpose ladders', 'monetary', 70.00, 15, 2, 5, '2024-10-06', 15, 'received'),
+('Bar soap', 'in-kind', 3.00, 200, 2, 6, '2024-10-07', 200, 'received'),
+('Blank notebooks', 'monetary', 1.00, 600, 2, 1, '2024-10-08', 600, 'received'),
+('Children\'s books', 'monetary', 8.00, 50, 2, 2, '2024-10-09', 50, 'received'),
+('Emergency survival kits', 'monetary', 35.00, 20, 2, 3, '2024-10-10', 20, 'received'),
+('School rulers', 'in-kind', 0.50, 500, 2, 4, '2024-10-11', 500, 'received'),
+('Solar lamps', 'monetary', 30.00, 20, 2, 5, '2024-10-12', 20, 'received'),
+('School calculators', 'monetary', 12.00, 40, 2, 6, '2024-10-13', 40, 'received'),
+('Portable fans', 'monetary', 25.00, 30, 2, 1, '2024-10-14', 30, 'received'),
+('School uniforms', 'monetary', 22.00, 60, 2, 2, '2024-10-15', 60, 'received'),
+('Adult clothing', 'in-kind', 20.00, 70, 2, 3, '2024-10-16', 70, 'received'),
+('Food baskets', 'in-kind', 45.00, 30, 2, 4, '2024-10-17', 30, 'received'),
+('Farm tools', 'monetary', 50.00, 20, 2, 5, '2024-10-18', 20, 'received'),
+('Solar-powered fans', 'monetary', 55.00, 15, 2, 6, '2024-10-19', 15, 'received'),
+('School supplies', 'in-kind', 25.00, 50, 2, 1, '2024-10-20', 50, 'received'),
+('Instant coffee', 'monetary', 30.00, 40, 2, 2, '2024-10-21', 40, 'received'),
+('Hand tools for farming', 'monetary', 45.00, 20, 2, 3, '2024-10-22', 20, 'received'),
+('Protective gloves', 'in-kind', 6.00, 100, 2, 4, '2024-10-23', 100, 'received'),
+('Water buckets', 'in-kind', 12.00, 40, 2, 5, '2024-10-24', 40, 'received'),
+('Portable water purifiers', 'monetary', 70.00, 15, 2, 6, '2024-10-25', 15, 'received'),
+('School craft supplies', 'in-kind', 20.00, 40, 2, 1, '2024-10-26', 40, 'received'),
+('Cooking appliances', 'monetary', 50.00, 25, 2, 2, '2024-10-27', 25, 'received'),
+('Women’s scarves', 'in-kind', 10.00, 80, 2, 3, '2024-10-28', 80, 'received'),
+('School gym equipment', 'monetary', 60.00, 20, 2, 4, '2024-10-29', 20, 'received'),
+('Farm fertilizers', 'monetary', 30.00, 40, 2, 5, '2024-10-30', 40, 'received'),
+('Medical ointments', 'in-kind', 18.00, 30, 2, 6, '2024-10-31', 30, 'received'),
+('School art materials', 'monetary', 35.00, 25, 2, 1, '2024-11-01', 25, 'received'),
+('Small medical appliances', 'monetary', 45.00, 15, 2, 2, '2024-11-02', 15, 'received'),
+('Women’s hats', 'in-kind', 12.00, 70, 2, 3, '2024-11-03', 70, 'received'),
+('School calculators', 'monetary', 20.00, 30, 2, 4, '2024-11-04', 30, 'received'),
+('Energy-efficient heaters', 'monetary', 75.00, 10, 2, 5, '2024-11-05', 10, 'received'),
+('Handcrafted bowls', 'in-kind', 15.00, 50, 2, 6, '2024-11-06', 50, 'received'),
+('Baby toys', 'in-kind', 8.00, 60, 2, 1, '2024-11-07', 60, 'received'),
+('School binders', 'in-kind', 6.00, 75, 2, 2, '2024-11-08', 75, 'received');
+
+
+-- SELECT user_id FROM users;
+
+-- SELECT community_id FROM communities;
