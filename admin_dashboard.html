@@ -10,15 +10,15 @@
     <header>
         <h1>Admin Dashboard</h1>
         <nav>
-            <ul>
-                <li><a href="#userManagement">User Management</a></li>
-                <li><a href="#donationOverview">Donation Overview</a></li>
-                <li><a href="#systemSettings">System Settings</a></li>
-            </ul>
+                <a href="#userManagement">User Management</a>
+                <a href="manage_all_donations.html">Donation Management</a>
+                <a href="manageAllCommunities.html">Community Management</a>
+                <a href="communityManager">Manage Community Managers</a>
         </nav>
         <button id="logoutBtn">Logout</button>
     </header>
     
+    <!-- User Management Section -->
     <div id="userManagement" class="tab-content">
         <h2>User Management</h2>
         <button id="addUserBtn">Add New User</button>
@@ -39,53 +39,15 @@
         </table>
     </div>
 
+    <!-- Donation Overview Section -->
     <div id="donationOverview" class="tab-content" style="display: none;">
         <h2>Donation Overview</h2>
-        <div id="filters">
-            <label for="donationStatus">Status:</label>
-            <select id="donationStatus">
-                <option value="">All</option>
-                <option value="pending">Pending</option>
-                <option value="received">Received</option>
-                <option value="completed">Completed</option>
-            </select>
-            <label for="donationCommunity">Community:</label>
-            <select id="donationCommunity">
-                <!-- Options will be populated dynamically -->
-            </select>
-            <button id="applyFiltersBtn">Apply Filters</button>
-        </div>
         <div id="donationList">
             <!-- Donation list will be populated here -->
         </div>
     </div>
 
-    <div id="systemSettings" class="tab-content" style="display: none;">
-        <h2>System Settings</h2>
-        <form id="settingsForm">
-            <fieldset>
-                <legend>Email Settings</legend>
-                <label for="smtpServer">SMTP Server:</label>
-                <input type="text" id="smtpServer" name="smtpServer" required>
-                <label for="smtpPort">SMTP Port:</label>
-                <input type="number" id="smtpPort" name="smtpPort" required>
-                <label for="smtpUser">SMTP User:</label>
-                <input type="text" id="smtpUser" name="smtpUser" required>
-                <label for="smtpPass">SMTP Password:</label>
-                <input type="password" id="smtpPass" name="smtpPass" required>
-            </fieldset>
-            <fieldset>
-                <legend>Role Management</legend>
-                <!-- Role management options -->
-            </fieldset>
-            <fieldset>
-                <legend>Application Settings</legend>
-                <!-- Application settings options -->
-            </fieldset>
-            <button type="submit">Save Settings</button>
-        </form>
-    </div>
-
+    <!-- Add User Form -->
     <div id="addUserFormContainer" style="display: none;">
         <h3>Add New User</h3>
         <form id="addUserForm">
@@ -105,6 +67,7 @@
             <button type="button" id="cancelAddUserBtn">Cancel</button>
         </form>
     </div>
+
 
     <script src="admin_dashboard.js"></script>
 </body>

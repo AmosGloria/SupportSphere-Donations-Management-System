@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Donation Management</title>
+    <link rel="stylesheet" href="manage_all_donations.css"> 
+</head>
+<body>
+    <nav>
+        <a href="#createDonation">Create Donation</a>
+        <a href="#viewDonation">View Donations</a>
+        <a href="#updateDonationSection">Update Donation Status</a>
+        <a href="communityManager">Manage Community Managers</a>
+</nav>
+    <h1 id="createDonation">Create a New Donation</h1>
+    <!-- create donation form -->
+    <form id="createDonationForm">
+        <label for="item_name">Item Name:</label>
+        <input type="text" id="item_name" name="item_name" required>
+
+        <label for="item_type">Item Type:</label>
+        <input type="text" id="item_type" name="item_type" required>
+
+        <label for="quantity">Quantity:</label>
+        <input type="number" id="quantity" name="quantity" required>
+
+        <label for="value">Value:</label>
+        <input type="number" id="value" name="value" required>
+
+        <label for="donation_date">Donation Date:</label>
+        <input type="date" id="donation_date" name="donation_date" required>
+
+        <label for="community_name">Community Name:</label>
+        <input type="text" id="community_name" name="community_name" required>
+
+        <button type="submit">Create Donation</button>
+    </form>
+
+    <p id="responseMessage"></p>
+
+
+    <!-- View Donations -->
+    <section id="viewDonation">
+        <h2>All Donations</h2>
+        <table id="donationTable">
+            <thead>
+                <tr>
+                    <th>Donation ID</th>
+                    <th>Item Name</th>
+                    <th>Item Type</th>
+                    <th>Quantity</th>
+                    <th>Value</th>
+                    <th>User ID</th>
+                    <th>Community ID</th>
+                    <th>Donation Date</th>
+                    <th>Remaining Quantity</th>
+                    <th>Status</th>
+                    <th>Sent to Admin</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Donation rows will be dynamically inserted here -->
+            </tbody>
+        </table>
+    </section>
+
+    <p id="errorMessage"></p>
+
+
+    <!-- Update Donation Status -->
+    <section id="updateDonationSection">
+        <h2>Update Donation Status</h2>
+
+        <form id="updateDonationForm">
+            <label for="donationId">Donation ID:</label>
+            <input type="number" id="donationId" name="donationId" required>
+
+            <label for="status">Status:</label>
+            <select id="status" name="status" required>
+                <option value="pending">Pending</option>
+                <option value="received">Received</option>
+            </select>
+
+            <label for="quantity_received">Quantity Received:</label>
+            <input type="number" id="quantity_received" name="quantity_received" required>
+
+            <label for="quantity_remaining">Remaining Quantity:</label>
+            <input type="number" id="quantity_remaining" name="quantity_remaining" required>
+
+            <button type="submit">Update Status</button>
+        </form>
+    </section>
+    <p id="responseMessage"></p>
+
+
+    <script src="manage_all_donations.js"></script> 
+</body>
+</html>

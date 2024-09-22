@@ -7,7 +7,7 @@ body {
 }
 
 header {
-    background-color: #007bff;
+    background-color: #004080;;
     color: white;
     padding: 1rem;
     text-align: center;
@@ -30,13 +30,13 @@ button {
     margin: 0.5rem;
     border: none;
     border-radius: 5px;
-    background-color: #007bff;
+    background-color: #004080;
     color: white;
     cursor: pointer;
 }
 
 button:hover {
-    background-color: #0056b3;
+    background-color: #004080;
 }
 
 /* Container and Layout */
@@ -76,7 +76,7 @@ h2 {
 
 /* Creative Welcome Message Styling */
 #welcomeMessage {
-    background: radial-gradient(circle, #007bff, #0056b3); /* Radial gradient for depth */
+    background: radial-gradient(circle, #007bff, #004080); /* Radial gradient for depth */
     color: white; /* White text for contrast */
     border-radius: 15px; /* More rounded corners for a modern look */
     padding: 2rem 3rem; /* Ample padding for a spacious feel */
@@ -118,11 +118,11 @@ h2 {
 /* Heart Shape Styling */
 #loveShapeContainer {
     position: relative;
-    width: 400px; 
-    height: 170px; 
-    background: white; /* White background */
+    width: 500px; 
+    height: 150px; 
+    background: white; 
     border-radius: 50% 50% 0 0; /* Top rounded corners */
-    border: 5px solid #007bff; /* Blue border */
+    border: 5px solid #004080; /* Blue border */
     overflow: hidden; /* Ensure content stays within bounds */
     margin: 0 auto; /* Center the heart shape */
     padding: 20px; /* Padding inside the heart shape */
@@ -137,7 +137,7 @@ h2 {
     width: 120px; /* Increased width of the circles */
     height: 120px; /* Increased height of the circles */
     background: white; /* White background for the circles */
-    border: 5px solid #007bff; /* Blue border for the circles */
+    border: 5px solid #004080; /* Blue border for the circles */
     border-radius: 50%;
     top: -60px; /* Adjust top position */
 }
@@ -152,7 +152,7 @@ h2 {
 
 #loveShapeContainer h3 {
     position: relative;
-    color: #007bff; /* Blue text color */
+    color: #004080; /* Blue text color */
     font-size: 1.2rem; /* Increased font size */
     margin: 0;
     z-index: 1; /* Ensure text is on top of the heart shape */

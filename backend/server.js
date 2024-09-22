@@ -30,28 +30,6 @@ const authenticateJWT = (req, res, next) => {
     });
 };
 
-// Create a nodemailer transporter for sending emails
-const transporter = nodemailer.createTransport({
-    service: 'Gmail',
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
-    }
-});
-
-// Send an email notification
-const sendNotification = async (to, subject, text) => {
-    try {
-        await transporter.sendMail({
-            from: process.env.EMAIL_USER,
-            to,
-            subject,
-            text
-        });
-    } catch (error) {
-        console.error('Error sending email:', error);
-    }
-};
 
 // Registration Route
 app.post('/register', async (req, res) => {
@@ -120,23 +98,15 @@ app.delete('/user/:id', authenticateJWT, async (req, res) => {
         }
 
         // Delete the user
-        const [deleteResult] = await pool.query('DELETE FROM Users WHERE user_id = ?', [id]);
+        const [result] = await pool.query('DELETE FROM Users WHERE user_id = ?', [id]);
 
-        if (deleteResult.affectedRows > 0) {
-            // Reassign remaining user IDs
-            const [users] = await pool.query('SELECT user_id FROM Users ORDER BY user_id');
-
-            for (let i = 0; i < users.length; i++) {
-                const newId = i + 1;
-                if (users[i].user_id !== newId) {
-                    await pool.query('UPDATE Users SET user_id = ? WHERE user_id = ?', [newId, users[i].user_id]);
-                }
-            }
-
-            res.sendStatus(204); // No Content, successful deletion and reassignment
-        } else {
-            res.status(404).json({ message: 'User not found' });
+        // Check if any row was affected
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: 'User not found' });
         }
+
+        // If user was deleted successfully
+        res.status(200).json({ message: 'Deleted successfully' });
     } catch (error) {
         console.error('Error:', error);
 
@@ -146,10 +116,11 @@ app.delete('/user/:id', authenticateJWT, async (req, res) => {
         } else if (error.code === 'ER_PARSE_ERROR') {
             res.status(500).json({ message: 'SQL syntax error' });
         } else {
-            res.status(500).json({ message: 'Failed to delete user and reassign IDs' });
+            res.status(500).json({ message: 'Failed to delete user' });
         }
     }
 });
+
 
 // Endpoint for Admin to Add a New User
 app.post('/admin/add-user', authenticateJWT, async (req, res) => {
@@ -175,89 +146,318 @@ app.post('/admin/add-user', authenticateJWT, async (req, res) => {
     }
 });
 
-// Handle creating a new donation
-app.post('/donations', authenticateJWT, async (req, res) => {
-    const { item_name, item_type, value, quantity, community_id, donation_date, remaining_quantity, status } = req.body;
-    const { user_id, role } = req.user;
+
+
+// Endpoint for Admin and Donor to create a donation
+app.post('/donations/create', authenticateJWT, async (req, res) => {
+    const { role, user_id } = req.user;
+    const { item_name, item_type, quantity, value, donation_date, community_name } = req.body;
+
+    // Ensure the user is an admin or a donor
+    if (role !== 'admin' && role !== 'donor') {
+        return res.status(403).json({ message: 'Access denied. Only admins or donors can create donations.' });
+    }
 
     try {
-        // Check if community_id is provided, otherwise set it to NULL
-        const communityIdValue = community_id ? community_id : null;
-
-        // Insert the donation into the database
-        const [result] = await pool.query(
-            'INSERT INTO Donations (item_name, item_type, value, quantity, user_id, community_id, donation_date, remaining_quantity, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)', 
-            [item_name, item_type, value, quantity, user_id, communityIdValue, donation_date, remaining_quantity, status]
+        // Fetch the community ID based on the provided community name
+        const [communityResult] = await pool.query(
+            'SELECT community_id FROM Communities WHERE community_name = ?',
+            [community_name]
         );
-        const donation_id = result.insertId;
 
-        // If donor, notify community manager
-        if (role === 'donor') {
-            const [communityManager] = await pool.query(
-                'SELECT email FROM Users WHERE role = "community_manager"'
-            );
-
-            if (communityManager.length > 0) {
-                const email = communityManager[0].email;
-                await sendNotification(email, 'New Donation Assigned', `A new donation with ID ${donation_id} has been assigned to your community.`);
-            }
+        if (communityResult.length === 0) {
+            return res.status(404).json({ message: 'Community not found' });
         }
 
-        res.status(201).send({ message: 'Donation created successfully!', donation_id });
+        const community_id = communityResult[0].community_id;
+
+        // Insert the new donation with the auto-generated donation_id, user_id, and community_id
+        const [donationResult] = await pool.query(
+            `INSERT INTO Donations (item_name, item_type, quantity, value, donation_date, user_id, community_id) 
+            VALUES (?, ?, ?, ?, ?, ?, ?)`,
+            [item_name, item_type, quantity, value, donation_date, user_id, community_id]
+        );
+
+        res.status(201).json({ message: 'Donation created successfully', donationId: donationResult.insertId });
     } catch (error) {
         console.error('Error creating donation:', error);
-        res.status(500).send({ message: 'Internal Server Error', error: error.message });
+        res.status(500).json({ message: 'Failed to create donation' });
     }
 });
 
-// Handle fetching donations
-app.get('/donations', authenticateJWT, async (req, res) => {
-    const { community_id } = req.query;
-    const query = community_id ? 'SELECT * FROM Donations WHERE community_id = ?' : 'SELECT * FROM Donations';
+
+
+// Endpoint for Admin to view all donations across all communities
+app.get('/admin/donations', authenticateJWT, async (req, res) => {
+    // Ensure the authenticated user is an admin
+    if (req.user.role !== 'admin') {
+        return res.status(403).json({ message: 'Access denied. Admins only.' });
+    }
 
     try {
-        const [rows] = await pool.query(query, [community_id]);
-        res.json(rows);
+        // Fetch all donations from the Donations table
+        const [donations] = await pool.query('SELECT * FROM Donations');
+
+        // Return the donations
+        res.status(200).json(donations);
     } catch (error) {
-        res.sendStatus(500);
+        console.error('Error fetching donations:', error);
+        res.status(500).json({ message: 'Failed to fetch donations' });
     }
 });
 
-// Handle updating an existing donation
-app.put('/donations/:id', authenticateJWT, async (req, res) => {
-    const { id } = req.params;
-    const { item_name, item_type, value, quantity, community_id, donation_date, remaining_quantity, status } = req.body;
+
+
+// Endpoint for Admin to update the status of a donation across all communities
+app.patch('/admin/donations/:donationId/status', authenticateJWT, async (req, res) => {
+    const { donationId } = req.params;
+    const { status, quantity_received, quantity_remaining } = req.body;
     const { role } = req.user;
 
+    // Ensure the authenticated user is an admin
+    if (role !== 'admin') {
+        return res.status(403).json({ message: 'Access denied. Admins only.' });
+    }
+
     try {
-        await pool.query('UPDATE Donations SET item_name = ?, item_type = ?, value = ?, quantity = ?, community_id = ?, donation_date = ?, remaining_quantity = ?, status = ? WHERE donation_id = ?', 
-            [item_name, item_type, value, quantity, community_id, donation_date, remaining_quantity, status, id]
+        // Update the status of the donation
+        const [result] = await pool.query(
+            'UPDATE Donations SET status = ?, remaining_quantity = ?, received_by_community_manager = 1 ' +
+            'WHERE donation_id = ?',
+            [status, quantity_remaining, donationId]
         );
 
-        if (role === 'community_manager' && status === 'Received') {
-            const [donor] = await pool.query('SELECT email FROM Users WHERE user_id = (SELECT user_id FROM Donations WHERE donation_id = ?)', [id]);
-            if (donor.length > 0) {
-                await sendNotification(donor[0].email, 'Donation Status Updated', `Your donation with ID ${id} has been received.`);
-            }
+        if (result.affectedRows > 0) {
+            res.json({ message: 'Donation status updated successfully' });
+        } else {
+            res.status(404).json({ message: 'Donation not found' });
         }
-
-        res.sendStatus(200);
     } catch (error) {
-        res.sendStatus(500);
+        console.error('Error updating donation status:', error);
+        res.status(500).json({ message: 'Failed to update donation status' });
     }
 });
 
-// Handle deleting a donation
-app.delete('/donations/:id', authenticateJWT, async (req, res) => {
-    const { id } = req.params;
+
+// Endpoint to delete a donation
+app.delete('/admin/donations/:donationId', authenticateJWT, async (req, res) => {
+    const { donationId } = req.params;
+    const { role } = req.user;
+
+    // Ensure the user is an admin
+    if (role !== 'admin') {
+        return res.status(403).json({ message: 'Access denied. Admins only.' });
+    }
 
     try {
-        await pool.query('DELETE FROM Donations WHERE donation_id = ?', [id]);
-        res.sendStatus(204);
+        const [result] = await pool.query('DELETE FROM Donations WHERE donation_id = ?', [donationId]);
+
+        if (result.affectedRows > 0) {
+            res.json({ message: 'Donation deleted successfully' });
+        } else {
+            res.status(404).json({ message: 'Donation not found' });
+        }
     } catch (error) {
-        res.sendStatus(500);
+        console.error('Error deleting donation:', error);
+        res.status(500).json({ message: 'Failed to delete donation' });
     }
 });
+
+
+
+// Endpoint for admin to create a new community
+app.post('/communities', authenticateJWT, async (req, res) => {
+    const { community_name, location, community_manager_id } = req.body;
+
+    // Ensure the authenticated user is an admin
+    if (req.user.role !== 'admin') {
+        return res.status(403).json({ message: 'Access denied. Admins only.' });
+    }
+
+    try {
+        // Insert new community with the assigned manager
+        await pool.query('INSERT INTO Communities (community_name, location, community_manager_id) VALUES (?, ?, ?)', [community_name, location, community_manager_id]);
+
+        res.status(201).json({ message: 'Community created successfully' });
+    } catch (error) {
+        console.error('Error creating community:', error);
+        res.status(500).json({ message: 'Failed to create community' });
+    }
+});
+
+
+
+// Endpoint for admin to get all communities
+app.get('/communities', authenticateJWT, async (req, res) => {
+    // Ensure the authenticated user is an admin
+    if (req.user.role !== 'admin') {
+        return res.status(403).json({ message: 'Access denied. Admins only.' });
+    }
+
+    try {
+        // Fetch all communities with their details
+        const [communities] = await pool.query(`
+            SELECT Communities.community_id, Communities.community_name, Communities.location, Users.name AS manager_name
+            FROM Communities
+            LEFT JOIN Users ON Communities.community_manager_id = Users.user_id
+        `);
+
+        res.json(communities);
+    } catch (error) {
+        console.error('Error fetching communities:', error);
+        res.status(500).json({ message: 'Failed to fetch communities' });
+    }
+});
+
+
+
+// Endpoint for admin to fetch community managers
+app.get('/managers', authenticateJWT, async (req, res) => {
+    // Ensure the authenticated user is an admin
+    if (req.user.role !== 'admin') {
+        return res.status(403).json({ message: 'Access denied. Admins only.' });
+    }
+
+    try {
+        // Fetch all users with the role 'community_manager'
+        const [managers] = await pool.query('SELECT user_id, name FROM Users WHERE role = "community_manager"');
+
+        res.status(200).json({ managers });
+    } catch (error) {
+        console.error('Error fetching managers:', error);
+        res.status(500).json({ message: 'Failed to fetch managers' });
+    }
+});
+
+
+// Endpoint to assign or reassign a community manager
+app.patch('/communities/:communityId/assign-manager', authenticateJWT, async (req, res) => {
+    let { communityId } = req.params;  // Fetch the communityId from request parameters
+    const { manager_id } = req.body;   // Fetch the manager_id from the request body
+
+    // Ensure the authenticated user is an admin
+    if (req.user.role !== 'admin') {
+        return res.status(403).json({ message: 'Access denied. Admins only.' });
+    }
+
+    // Ensure communityId is a number
+    communityId = parseInt(communityId, 10);
+
+    try {
+        // Update the community with the new manager
+        const [result] = await pool.query('UPDATE Communities SET community_manager_id = ? WHERE community_id = ?', [manager_id, communityId]);
+
+        if (result.affectedRows > 0) {
+            res.json({ message: 'Community manager assigned successfully' });
+        } else {
+            res.status(404).json({ message: 'Community not found' });
+        }
+    } catch (error) {
+        console.error('Error updating community manager:', error);
+        res.status(500).json({ message: 'Failed to update community manager' });
+    }
+});
+
+
+// Endpoint for Community Manager to view all donations for their community
+app.get('/community/donations', authenticateJWT, async (req, res) => {
+    const { role, user_id } = req.user;
+
+    // Ensure the authenticated user is a community manager
+    if (role !== 'community_manager') {
+        return res.status(403).json({ message: 'Access denied. Community managers only.' });
+    }
+
+    try {
+        // Fetch the community ID for the logged-in community manager
+        const [communityManager] = await pool.query(
+            'SELECT community_id FROM Communities WHERE community_manager_id = ?', [user_id]
+        );
+
+        if (communityManager.length === 0) {
+            return res.status(404).json({ message: 'Community not found for this manager.' });
+        }
+
+        const community_id = communityManager[0].community_id;
+
+        // Fetch donations directed to the community of the logged-in manager
+        const [donations] = await pool.query(
+            'SELECT * FROM Donations WHERE community_id = ?', [community_id]
+        );
+
+        // Return donations filtered by the manager's community
+        res.status(200).json(donations);
+    } catch (error) {
+        console.error('Error fetching donations for community manager:', error);
+        res.status(500).json({ message: 'Failed to fetch donations for community' });
+    }
+});
+
+
+
+// Endpoint for Community Manager to update the status of a donation
+app.patch('/community/donations/:donationId/status', authenticateJWT, async (req, res) => {
+    const { donationId } = req.params;
+    const { status, quantity_received, quantity_remaining } = req.body;
+    const { user_id } = req.user;
+
+    // Ensure the authenticated user is a community manager
+    if (req.user.role !== 'community_manager') {
+        return res.status(403).json({ message: 'Access denied. Community managers only.' });
+    }
+
+    try {
+        // Fetch the community ID for the logged-in community manager
+        const [communityManager] = await pool.query(
+            'SELECT community_id FROM Communities WHERE community_manager_id = ?', [user_id]
+        );
+
+        // Check if the community manager is assigned to a community
+        if (communityManager.length === 0) {
+            return res.status(404).json({ message: 'Community manager not assigned to any community' });
+        }
+
+        const community_id = communityManager[0].community_id;
+
+        // Update the status of the donation, ensuring it belongs to the manager's community
+        const [result] = await pool.query(
+            'UPDATE Donations SET status = ?, remaining_quantity = ?, received_by_community_manager = 1 ' +
+            'WHERE donation_id = ? AND community_id = ?',
+            [status, quantity_remaining, donationId, community_id]
+        );
+
+        if (result.affectedRows > 0) {
+            res.json({ message: 'Donation status updated successfully' });
+        } else {
+            res.status(404).json({ message: 'Donation not found or does not belong to your community' });
+        }
+    } catch (error) {
+        console.error('Error updating donation status:', error);
+        res.status(500).json({ message: 'Failed to update donation status' });
+    }
+});
+
+
+// Endpoint for Donor to view their donation history
+app.get('/donor/donations', authenticateJWT, async (req, res) => {
+    const { user_id } = req.user; // Get the user ID from the authenticated user
+
+    try {
+        // Fetch donations made by the donor
+        const [donations] = await pool.query(
+            'SELECT * FROM Donations WHERE user_id = ?',
+            [user_id]
+        );
+
+        // Return the donations history
+        res.status(200).json(donations);
+    } catch (error) {
+        console.error('Error fetching donor donation history:', error);
+        res.status(500).json({ message: 'Failed to fetch donation history' });
+    }
+});
+
+
 
 // Start the server
 app.listen(PORT, () => {
