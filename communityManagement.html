@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Community Management</title>
+    <link rel="stylesheet" href="communityManagement.css"> 
+</head>
+<body>
+
+    <nav>
+        <a href="#createCommunityForm">Create Community</a>
+        <a href="#assignManagerForm">Assign/Reassign Community Manager</a> 
+        <a href="#viewCommunities">View Communities</a>
+        <a href="communityManagement.html">Community Management</a>
+</nav>
+  
+
+<!-- create new community -->
+<div>
+    <h1>Create Community</h1>
+
+    <form id="createCommunityForm">
+        <label for="community_name">Community Name:</label>
+        <input type="text" id="community_name" name="community_name" required>
+        
+        <label for="location">Location:</label>
+        <input type="text" id="location" name="location" required>
+
+        <input type="submit" value="Create Community">
+    </form>
+
+    <div id="message"></div>
+</div>
+
+
+<!-- Assign/Reassign Community Manager to a community -->
+<div>
+    <h1>Assign/Reassign Community Manager</h1>
+
+    <form id="assignManagerForm">
+        <label for="community_id">Community ID:</label>
+        <input type="number" id="community_id" name="community_id" required>
+        
+        <label for="manager_id">Manager ID:</label>
+        <input type="number" id="manager_id" name="manager_id" required>
+
+        <input type="submit" value="Assign Manager">
+    </form>
+
+    <div id="message"></div>
+</div>
+
+
+<!-- admin to get all communities -->
+<div>
+    <h1>Communities List</h1>
+
+    <table id="communitiesTable" border="1">
+        <thead>
+            <tr>
+                <th>Community ID</th>
+                <th>Community Name</th>
+                <th>Location</th>
+                <th>Manager Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Rows will be populated dynamically -->
+        </tbody>
+    </table>
+
+    <div id="message"></div>
+</div>
+
+
+<script src="communityManagement.js"></script>
+
+</body>
+</html>

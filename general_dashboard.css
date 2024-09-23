@@ -156,5 +156,6 @@ h2 {
     font-size: 1.2rem; /* Increased font size */
     margin: 0;
     z-index: 1; /* Ensure text is on top of the heart shape */
+    
 }
 

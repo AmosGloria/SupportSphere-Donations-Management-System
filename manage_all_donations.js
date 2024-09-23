@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('token')}` // Assumes you are storing JWT in localStorage
+                    'Authorization': `Bearer ${localStorage.getItem('token')}` //storing JWT in localStorage
                 },
                 body: JSON.stringify(formData)
             });
@@ -76,7 +76,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         <td>${donation.donation_date}</td>
                         <td>${donation.remaining_quantity}</td>
                         <td>${donation.status}</td>
-                        <td>${donation.sent_to_admin ? 'Yes' : 'No'}</td>
                         <td>
                             <button class="deleteBtn" data-id="${donation.donation_id}">Delete</button>
                         </td>

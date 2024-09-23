@@ -264,10 +264,9 @@ app.delete('/admin/donations/:donationId', authenticateJWT, async (req, res) => 
 });
 
 
-
-// Endpoint for admin to create a new community
+//endpoint for admin to create a new community
 app.post('/communities', authenticateJWT, async (req, res) => {
-    const { community_name, location, community_manager_id } = req.body;
+    const { community_name, location } = req.body;
 
     // Ensure the authenticated user is an admin
     if (req.user.role !== 'admin') {
@@ -275,13 +274,52 @@ app.post('/communities', authenticateJWT, async (req, res) => {
     }
 
     try {
-        // Insert new community with the assigned manager
-        await pool.query('INSERT INTO Communities (community_name, location, community_manager_id) VALUES (?, ?, ?)', [community_name, location, community_manager_id]);
+        // Insert new community, auto-generate community_id
+        const [result] = await pool.query(
+            'INSERT INTO Communities (community_name, location) VALUES (?, ?)', 
+            [community_name, location]
+        );
 
-        res.status(201).json({ message: 'Community created successfully' });
+        // Fetch the auto-generated community_id
+        const community_id = result.insertId;
+
+        res.status(201).json({ 
+            message: 'Community created successfully', 
+            community_id 
+        });
     } catch (error) {
         console.error('Error creating community:', error);
         res.status(500).json({ message: 'Failed to create community' });
+    }
+});
+
+
+
+// Endpoint to assign or reassign a community manager
+app.patch('/communities/:communityId/assign-manager', authenticateJWT, async (req, res) => {
+    let { communityId } = req.params;  // Fetch the communityId from request parameters
+    const { manager_id } = req.body;   // Fetch the manager_id from the request body
+
+    // Ensure the authenticated user is an admin
+    if (req.user.role !== 'admin') {
+        return res.status(403).json({ message: 'Access denied. Admins only.' });
+    }
+
+    // Ensure communityId is a number
+    communityId = parseInt(communityId, 10);
+
+    try {
+        // Update the community with the new manager
+        const [result] = await pool.query('UPDATE Communities SET community_manager_id = ? WHERE community_id = ?', [manager_id, communityId]);
+
+        if (result.affectedRows > 0) {
+            res.json({ message: 'Community manager assigned successfully' });
+        } else {
+            res.status(404).json({ message: 'Community not found' });
+        }
+    } catch (error) {
+        console.error('Error updating community manager:', error);
+        res.status(500).json({ message: 'Failed to update community manager' });
     }
 });
 
@@ -329,34 +367,6 @@ app.get('/managers', authenticateJWT, async (req, res) => {
     }
 });
 
-
-// Endpoint to assign or reassign a community manager
-app.patch('/communities/:communityId/assign-manager', authenticateJWT, async (req, res) => {
-    let { communityId } = req.params;  // Fetch the communityId from request parameters
-    const { manager_id } = req.body;   // Fetch the manager_id from the request body
-
-    // Ensure the authenticated user is an admin
-    if (req.user.role !== 'admin') {
-        return res.status(403).json({ message: 'Access denied. Admins only.' });
-    }
-
-    // Ensure communityId is a number
-    communityId = parseInt(communityId, 10);
-
-    try {
-        // Update the community with the new manager
-        const [result] = await pool.query('UPDATE Communities SET community_manager_id = ? WHERE community_id = ?', [manager_id, communityId]);
-
-        if (result.affectedRows > 0) {
-            res.json({ message: 'Community manager assigned successfully' });
-        } else {
-            res.status(404).json({ message: 'Community not found' });
-        }
-    } catch (error) {
-        console.error('Error updating community manager:', error);
-        res.status(500).json({ message: 'Failed to update community manager' });
-    }
-});
 
 
 // Endpoint for Community Manager to view all donations for their community
