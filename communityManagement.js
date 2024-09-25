@@ -115,6 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <td>${community.community_name}</td>
                     <td>${community.location}</td>
                     <td>${community.manager_name || 'Unassigned'}</td>
+                    <td>${community.community_manager_id}</td>
                 `;
     
                 tableBody.appendChild(row);

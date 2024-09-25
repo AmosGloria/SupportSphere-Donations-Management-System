@@ -239,7 +239,7 @@ app.patch('/admin/donations/:donationId/status', authenticateJWT, async (req, re
 });
 
 
-// Endpoint to delete a donation
+// Endpoint for admin to delete a donation
 app.delete('/admin/donations/:donationId', authenticateJWT, async (req, res) => {
     const { donationId } = req.params;
     const { role } = req.user;
@@ -333,9 +333,10 @@ app.get('/communities', authenticateJWT, async (req, res) => {
     }
 
     try {
-        // Fetch all communities with their details
+        // Fetch all communities with their details, including community_manager_id
         const [communities] = await pool.query(`
-            SELECT Communities.community_id, Communities.community_name, Communities.location, Users.name AS manager_name
+            SELECT Communities.community_id, Communities.community_name, Communities.location, 
+                   Communities.community_manager_id, Users.name AS manager_name
             FROM Communities
             LEFT JOIN Users ON Communities.community_manager_id = Users.user_id
         `);
@@ -346,6 +347,7 @@ app.get('/communities', authenticateJWT, async (req, res) => {
         res.status(500).json({ message: 'Failed to fetch communities' });
     }
 });
+
 
 
 
@@ -366,7 +368,6 @@ app.get('/managers', authenticateJWT, async (req, res) => {
         res.status(500).json({ message: 'Failed to fetch managers' });
     }
 });
-
 
 
 // Endpoint for Community Manager to view all donations for their community
