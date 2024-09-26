@@ -1,74 +1,149 @@
-/* Basic styling for donor dashboard */
-
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
-    margin: 0;
-    padding: 0;
-}
-
+/* Container styling */
 .container {
-    padding: 2rem;
+    width: 80%;
     margin: 0 auto;
-    max-width: 1200px;
+    padding-top: 20px;
 }
 
-h1 {
-    text-align: center;
-    margin-bottom: 1rem;
-}
-
-nav {
-    margin-bottom: 2rem;
-}
-
-ul {
-    list-style: none;
+/* Navigation styling */
+nav ul {
+    list-style-type: none;
     padding: 0;
+    text-align: center;
 }
 
-li {
-    margin-bottom: 0.5rem;
+nav ul li {
+    display: inline-block;
+    margin: 0 10px;
 }
 
-a {
+nav a {
+    background-color: #004080;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
     text-decoration: none;
-    color: #007bff;
-    font-size: 1.2rem;
+    font-size: 18px;
+    transition: background-color 0.3s;
 }
 
-a:hover {
-    text-decoration: underline;
+nav a:hover {
+    background-color: #ffdd00;
+    color: #004080;
 }
 
-button {
-    background-color: #007bff;
-    color: #fff;
+/* Logout button styling */
+#logoutBtn {
+    background-color: #004080;
+    color: white;
     border: none;
-    padding: 0.8rem 1.5rem;
-    border-radius: 4px;
+    padding: 10px 20px;
+    border-radius: 5px;
     cursor: pointer;
-    font-size: 1rem;
+    font-size: 16px;
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    transition: background-color 0.3s;
 }
 
-button:hover {
-    background-color: #0056b3;
+#logoutBtn:hover {
+    background-color: #ffdd00;
+    color: #004080;
 }
 
-/* Additional styling for table elements */
+/* Form Styling */
+form {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 60%;
+    margin: 20px auto;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+form label {
+    display: block;
+    margin-bottom: 10px;
+    color: #004080;
+    font-weight: bold;
+}
+
+form input, form button {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 4px;
+    border: 1px solid #004080;
+}
+
+form button {
+    background-color: #004080;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+form button:hover {
+    background-color: #ffdd00;
+    color: #004080;
+}
+
+/* Donation History Table Styling */
 table {
     width: 100%;
+    margin: 30px auto;
     border-collapse: collapse;
-    margin-top: 1rem;
+    background-color: white;
+    border: 1px solid #ddd;
 }
 
-th, td {
-    padding: 0.8rem;
-    text-align: left;
-    border-bottom: 1px solid #ddd;
+table th, table td {
+    padding: 12px;
+    border: 1px solid #ddd;
+    text-align: center;
 }
 
-th {
-    background-color: #007bff;
-    color: #fff;
+table th {
+    background-color: #004080;
+    color: white;
+}
+
+table tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+table tr:hover {
+    background-color: #f1f1f1;
+}
+
+/* Response message styling */
+#responseMessage {
+    color: #004080;
+    text-align: center;
+    margin-top: 20px;
+    font-weight: bold;
+}
+
+/* Error Message */
+#message {
+    color: red;
+    text-align: center;
+    margin-top: 20px;
+    font-weight: bold;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    form {
+        width: 90%;
+    }
+
+    table {
+        width: 100%;
+    }
+
+    nav a {
+        font-size: 16px;
+    }
 }

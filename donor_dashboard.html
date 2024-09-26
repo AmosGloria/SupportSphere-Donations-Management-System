@@ -10,78 +10,59 @@
     <div class="container">
         <h1>Donor Dashboard</h1>
         <nav>
-            <ul>
-                <li><a href="#" id="createDonationLink">Create Donation</a></li>
-                <li><a href="#" id="viewDonationsLink">View My Donations</a></li>
-                <li><a href="#" id="notificationsLink">Notifications</a></li>
-            </ul>
+                <a href="#" id="createDonation">Create Donation</a>
+                <a href="#" id="donationTable">My Donation History</a>
         </nav>
         <button id="logoutBtn">Logout</button>
 
-        <div id="dashboardContent">
-            <!-- Content for Create Donation -->
-            <div id="createDonation" class="content-section" style="display: none;">
-                <h2>Create Donation</h2>
-                <form id="createDonationForm">
-                    <label for="item_name">Item Name:</label>
-                    <input type="text" id="item_name" name="item_name" required>
+        <h1 id="createDonation">Create a New Donation</h1>
+    <!-- create donation form -->
+    <form id="createDonationForm">
+        <label for="item_name">Item Name:</label>
+        <input type="text" id="item_name" name="item_name" required>
 
-                    <label for="item_type">Item Type:</label>
-                    <input type="text" id="item_type" name="item_type" required>
+        <label for="item_type">Item Type:</label>
+        <input type="text" id="item_type" name="item_type" required>
 
-                    <label for="value">Value:</label>
-                    <input type="number" id="value" name="value" required>
+        <label for="quantity">Quantity:</label>
+        <input type="number" id="quantity" name="quantity" required>
 
-                    <label for="quantity">Quantity:</label>
-                    <input type="number" id="quantity" name="quantity" required>
+        <label for="value">Value:</label>
+        <input type="number" id="value" name="value" required>
 
-                    <!-- <label for="community_id">Community ID (Optional):</label>
-                    <input type="text" id="community_id" name="community_id" placeholder="Optional"> -->
+        <label for="donation_date">Donation Date:</label>
+        <input type="date" id="donation_date" name="donation_date" required>
 
-                    <label for="donation_date">Donation Date:</label>
-                    <input type="date" id="donation_date" name="donation_date" required>
+        <label for="community_name">Community Name:</label>
+        <input type="text" id="community_name" name="community_name" required>
 
-                    <label for="remaining_quantity">Remaining Quantity:</label>
-                    <input type="number" id="remaining_quantity" name="remaining_quantity" required>
+        <button type="submit">Create Donation</button>
+    </form>
 
-                    <!-- <label for="status">Status:</label>
-                    <input type="text" id="status" name="status" required> -->
+    <p id="responseMessage"></p>
 
-                    <button type="submit">Submit Donation</button>
-                </form>
-            </div>
 
-            <!-- Content for View Donations -->
-            <div id="viewDonations" class="content-section" style="display: none;">
-                <h2>My Donations</h2>
-                <table id="donationsTable">
-                    <thead>
-                        <tr>
-                            <th>Item Name</th>
-                            <th>Item Type</th>
-                            <th>Value</th>
-                            <th>Quantity</th>
-                            <th>Community ID</th>
-                            <th>Donation Date</th>
-                            <th>Remaining Quantity</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Donations will be dynamically added here -->
-                    </tbody>
-                </table>
-            </div>
+           <h1>My Donation History</h1>
 
-            <!-- Content for Notifications -->
-            <div id="notifications" class="content-section" style="display: none;">
-                <h2>Notifications</h2>
-                <ul id="notificationsList">
-                    <!-- Notifications will be dynamically added here -->
-                </ul>
-            </div>
-        </div>
-    </div>
+    <table id="donationTable">
+        <thead>
+            <tr>
+                <th>Donation ID</th>
+                <th>Item Name</th>
+                <th>Item Type</th>
+                <th>Quantity</th>
+                <th>Value</th>
+                <th>Date</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Donation history will be dynamically loaded here -->
+        </tbody>
+    </table>
+
+    <!-- Message for loading and errors -->
+    <div id="message" style="display: none;"></div>
     <script src="donor_dashboard.js"></script>
 </body>
 </html>

@@ -1,157 +1,96 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const createDonationLink = document.getElementById('createDonationLink');
-    const viewDonationsLink = document.getElementById('viewDonationsLink');
-    const notificationsLink = document.getElementById('notificationsLink');
-    const logoutBtn = document.getElementById('logoutBtn');
-
-    // Sections
-    const createDonationSection = document.getElementById('createDonation');
-    const viewDonationsSection = document.getElementById('viewDonations');
-    const notificationsSection = document.getElementById('notifications');
-
-    // Form and Table Elements
     const createDonationForm = document.getElementById('createDonationForm');
-    const donationsTableBody = document.getElementById('donationsTable').getElementsByTagName('tbody')[0];
-    const notificationsList = document.getElementById('notificationsList');
+    const responseMessage = document.getElementById('responseMessage');
+    const donationTableBody = document.querySelector('#donationTable tbody');
+    const messageDiv = document.getElementById('message');
 
-    // Show and Hide Sections
-    const showSection = (section) => {
-        createDonationSection.style.display = 'none';
-        viewDonationsSection.style.display = 'none';
-        notificationsSection.style.display = 'none';
-        section.style.display = 'block';
-        scrollToSection(section); // Smooth scroll to the section
-    };
-
-    createDonationLink.addEventListener('click', () => showSection(createDonationSection));
-    viewDonationsLink.addEventListener('click', () => showSection(viewDonationsSection));
-    notificationsLink.addEventListener('click', () => showSection(notificationsSection));
-
-    // Logout functionality
-    logoutBtn.addEventListener('click', () => {
-        localStorage.removeItem('token');
-        window.location.href = 'login.html';  // Handle logout logic here
-    });
-
-    // Submit Create Donation Form
+    // Function to handle form submission for creating a donation
     createDonationForm.addEventListener('submit', async (event) => {
-        event.preventDefault();
+        event.preventDefault(); // Prevent the default form submission
 
-        const formData = new FormData(createDonationForm);
-        const donationData = {
-            item_name: formData.get('item_name'),
-            item_type: formData.get('item_type'),
-            value: formData.get('value'),
-            quantity: formData.get('quantity'),
-            donation_date: formData.get('donation_date'),
-            remaining_quantity: formData.get('remaining_quantity'),
-            status: formData.get('status')
+        const formData = {
+            item_name: document.getElementById('item_name').value,
+            item_type: document.getElementById('item_type').value,
+            quantity: document.getElementById('quantity').value,
+            value: document.getElementById('value').value,
+            donation_date: document.getElementById('donation_date').value,
+            community_name: document.getElementById('community_name').value
         };
 
         try {
-            const response = await fetch('http://localhost:8090/donations', {
+            const response = await fetch('http://localhost:8090/donations/create', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    'Authorization': `Bearer ${localStorage.getItem('token')}` // Assuming JWT is stored in localStorage
                 },
-                body: JSON.stringify(donationData)
+                body: JSON.stringify(formData)
             });
 
+            const data = await response.json();
+
             if (response.ok) {
-                alert('Donation submitted successfully');
-                createDonationForm.reset();
+                responseMessage.textContent = `Donation created successfully with ID: ${data.donationId}`;
+                responseMessage.style.color = 'green';
+                createDonationForm.reset(); // Clear the form
             } else {
-                alert('Failed to submit donation');
+                responseMessage.textContent = `Error: ${data.message}`;
+                responseMessage.style.color = 'red';
             }
         } catch (error) {
-            console.error('Error submitting donation:', error);
-            alert('An error occurred');
+            console.error('Error:', error);
+            responseMessage.textContent = 'Failed to create donation';
+            responseMessage.style.color = 'red';
         }
     });
 
-    // Fetch and Display Donations
-    const fetchDonations = async () => {
+    // Function to fetch donation history
+    async function fetchDonations() {
         try {
-            const response = await fetch('http://localhost:8090/donations', {
+            const response = await fetch('http://localhost:8090/donor/donations', {
+                method: 'GET',
                 headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`, // Assuming you're using JWT stored in localStorage
+                    'Content-Type': 'application/json'
                 }
             });
 
-            if (response.ok) {
-                const donations = await response.json();
-                donationsTableBody.innerHTML = '';
+            // Check if response is OK
+            if (!response.ok) {
+                throw new Error('Failed to fetch donation history');
+            }
 
-                donations.forEach(donation => {
-                    const row = donationsTableBody.insertRow();
-                    row.insertCell().textContent = donation.item_name;
-                    row.insertCell().textContent = donation.item_type;
-                    row.insertCell().textContent = donation.value;
-                    row.insertCell().textContent = donation.quantity;
-                    row.insertCell().textContent = donation.community_id || 'N/A'; // Handle optional community_id
-                    row.insertCell().textContent = donation.donation_date;
-                    row.insertCell().textContent = donation.remaining_quantity;
-                    row.insertCell().textContent = donation.status;
+            const data = await response.json();
+
+            // If there are donations, populate the table
+            if (data.length > 0) {
+                data.forEach(donation => {
+                    const row = document.createElement('tr');
+
+                    row.innerHTML = `
+                        <td>${donation.donation_id}</td>
+                        <td>${donation.item_name}</td>
+                        <td>${donation.item_type}</td>
+                        <td>${donation.quantity}</td>
+                        <td>${donation.value}</td>
+                        <td>${new Date(donation.donation_date).toLocaleDateString()}</td>
+                        <td>${donation.status}</td>
+                    `;
+
+                    donationTableBody.appendChild(row);
                 });
             } else {
-                console.error('Failed to fetch donations');
+                // Display message if no donations found
+                messageDiv.style.display = 'block';
+                messageDiv.innerText = 'No donation history found.';
             }
         } catch (error) {
-            console.error('Error fetching donations:', error);
+            console.error('Error fetching donation history:', error);
+            messageDiv.style.display = 'block';
+            messageDiv.innerText = 'Failed to load donation history.';
         }
-    };
+    }
 
-    fetchDonations();
-
-    // Fetch and Display Notifications
-    const fetchNotifications = async () => {
-        try {
-            const response = await fetch('http://localhost:8090/notifications', {
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                }
-            });
-
-            if (response.ok) {
-                const notifications = await response.json();
-                notificationsList.innerHTML = '';
-
-                notifications.forEach(notification => {
-                    const listItem = document.createElement('li');
-                    listItem.textContent = notification.message || 'No message';
-                    notificationsList.appendChild(listItem);
-                });
-            } else {
-                console.error('Failed to fetch notifications');
-            }
-        } catch (error) {
-            console.error('Error fetching notifications:', error);
-        }
-    };
-
-    fetchNotifications();
-
-    // Smooth Scroll Functionality for Button Clicks
-    const scrollToSection = (element) => {
-        element.scrollIntoView({
-            behavior: 'smooth',
-            block: 'start'
-        });
-    };
-
-    // Keyboard Navigation for Arrow Keys
-    document.addEventListener('keydown', (event) => {
-        if (event.key === 'ArrowDown') {
-            window.scrollBy({
-                top: window.innerHeight, // Scroll down by the viewport height
-                behavior: 'smooth'
-            });
-        } else if (event.key === 'ArrowUp') {
-            window.scrollBy({
-                top: -window.innerHeight, // Scroll up by the viewport height
-                behavior: 'smooth'
-            });
-        }
-    });
+    // Fetch donations when DOM is fully loaded
+    fetchDonations(); // Call the async function without await at the top level
 });
